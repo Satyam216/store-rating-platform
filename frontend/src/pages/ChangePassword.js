@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import api from "../services/api";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function ChangePassword() {
+  const [oldPassword, setOld] = useState("");
+  const [newPassword, setNew] = useState("");
   const [msg, setMsg] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
-    setMsg("");
     try {
-      const { data } = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setMsg("Login successful");
-      window.location.href = "/";
+      const { data } = await api.post("/auth/password", {
+        oldPassword,
+        newPassword,
+      });
+      setMsg(data && data.message ? data.message : "Password updated");
     } catch (err) {
       setMsg(
         (err && err.response && err.response.data && err.response.data.message) ||
-          "Login failed"
+          "Failed"
       );
     }
   };
@@ -29,28 +28,29 @@ export default function Login() {
         <button className="back" onClick={() => window.history.back()}>
           ← Back
         </button>
-        <h2>Login</h2>
+        <h2>Update Password</h2>
       </div>
       <div className="card" style={{ maxWidth: 500 }}>
         <form onSubmit={submit} className="grid" style={{ gap: 12 }}>
           <div>
-            <label className="label">Email</label>
-            <input
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="label">Password</label>
+            <label className="label">Old Password</label>
             <input
               className="input"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={oldPassword}
+              onChange={(e) => setOld(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary">Login</button>
+          <div>
+            <label className="label">New Password</label>
+            <input
+              className="input"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNew(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-primary">Save</button>
           {msg && <div className="badge">{msg}</div>}
         </form>
       </div>

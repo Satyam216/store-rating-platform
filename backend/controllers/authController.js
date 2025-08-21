@@ -2,12 +2,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password, address } = req.body;
+    const { name, email, password, address, role } = req.body;
 
     console.log("Signup body:", req.body);
 
+    // Name validation
     if (!name) {
       return res.status(400).json({ message: "Name is required" });
     }
@@ -17,10 +19,12 @@ exports.signup = async (req, res) => {
         .json({ message: "Name must be between 3 and 60 characters" });
     }
 
+    // Email validation
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
 
+    // Password validation
     if (!password) {
       return res.status(400).json({ message: "Password is required" });
     }
@@ -46,6 +50,7 @@ exports.signup = async (req, res) => {
       email,
       password: hashedPassword,
       address,
+      role: role || "user", // default role = user
     });
 
     res.status(201).json({
@@ -58,11 +63,11 @@ exports.signup = async (req, res) => {
   }
 };
 
+// ================= LOGIN =================
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Debugging log
     console.log("Login body:", req.body);
 
     if (!email || !password) {
@@ -89,6 +94,41 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.error("Login Error:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id; 
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Both old and new passwords are required" });
+    }
+
+    // Password validation for new password
+    if (!/^(?=.*[A-Z])(?=.*\W).{8,16}$/.test(newPassword)) {
+      return res.status(400).json({
+        message:
+          "New password must be 8–16 characters, include an uppercase & a special character",
+      });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Old password is incorrect" });
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Update Password Error:", err.message);
     res.status(500).json({ message: err.message });
   }
 };
