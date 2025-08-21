@@ -6,7 +6,7 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 router.get("/", (req, res) => {
-  res.send("Auth API working ✅");
+  res.send("Auth API working");
 });
 
 module.exports = router;
