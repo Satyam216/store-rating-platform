@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";   // 👈 yeh import add karo
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 export default function AdminStores() {
@@ -50,7 +50,6 @@ export default function AdminStores() {
   return (
     <div className="container">
       <div className="header">
-        {/* 👇 history.back() hata ke navigate(-1) use karo */}
         <button className="back" onClick={() => navigate(-1)}>← Back</button>
         <h2>Manage Stores</h2>
       </div>

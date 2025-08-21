@@ -13,7 +13,7 @@ exports.dashboardCounts = async (req, res) => {
 exports.addUser = async (req, res) => {
   try {
     const { name, email, password, address, role } = req.body;
-    if (!name || name.length < 20 || name.length > 60) return res.status(400).json({ message: "Name 20–60 chars" });
+    if (!name || name.length < 3 || name.length > 60) return res.status(400).json({ message: "Name 20–60 chars" });
     if (!email) return res.status(400).json({ message: "Email required" });
     if (address && address.length > 400) return res.status(400).json({ message: "Address max 400 chars" });
     const PASS_REGEX = /^(?=.*[A-Z])(?=.*\W).{8,16}$/;
