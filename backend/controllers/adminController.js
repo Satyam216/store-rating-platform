@@ -9,7 +9,6 @@ exports.dashboardCounts = async (req, res) => {
   res.json({ totalUsers, totalStores, totalRatings });
 };
 
-// Add users (admin can add admin or normal, and store owners)
 exports.addUser = async (req, res) => {
   try {
     const { name, email, password, address, role } = req.body;
@@ -59,7 +58,6 @@ exports.userDetails = async (req, res) => {
 
   let ownerRating = null;
   if (user.role === "Store Owner") {
-    // average rating of his store(s)
     const stores = await Store.findAll({ where: { owner_id: user.id }, attributes: ["id"] });
     const storeIds = stores.map(s => s.id);
     if (storeIds.length) {

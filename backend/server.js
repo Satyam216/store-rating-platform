@@ -17,7 +17,6 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => res.send("API running"));
 
-// mount
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/owner", storeOwnerRoutes);
